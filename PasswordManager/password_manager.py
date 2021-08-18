@@ -14,11 +14,7 @@ while connect != ADMIN_PASSWORD:
 
 conn = sqlite3.connect('pass_manager.db')
 
-def create_password(pass_key, service, admin_pass):
-    return sha256(admin_pass.encode('utf-8') + service.lower().encode('utf-8') + pass_key.encode('utf-8')).hexdigest()[:15]
 
-def get_hex_key(admin_pass, service):
-    return sha256(admin_pass.encode('utf-8') + service.lower().encode('utf-8')).hexdigest()
 
 def get_password(admin_pass, service):
     secret_key = get_hex_key(admin_pass, service)
@@ -28,6 +24,12 @@ def get_password(admin_pass, service):
     for row in cursor:
         file_string = row[0]
     return create_password(file_string, service, admin_pass)
+
+def create_password(pass_key, service, admin_pass):
+    return sha256(admin_pass.encode('utf-8') + service.lower().encode('utf-8') + pass_key.encode('utf-8')).hexdigest()[:15]
+
+def get_hex_key(admin_pass, service):
+    return sha256(admin_pass.encode('utf-8') + service.lower().encode('utf-8')).hexdigest()
 
 def add_password(service, admin_pass):
     secret_key = get_hex_key(admin_pass, service)
@@ -55,11 +57,13 @@ if connect == ADMIN_PASSWORD:
         print("*"*15)
         input_ = input(":")
 
-        if input_ == "q":
-            break
         if input_ == "sp":
             service = input("What is the name of the service?\n")
             print("\n" + service.capitalize() + " password created:\n" + add_password(service, ADMIN_PASSWORD))
+            
+        if input_ == "q":
+            break
+            
         if input_ == "gp":
             service = input("What is the name of the service?\n")
             print("\n" + service.capitalize() + " password:\n"+get_password(ADMIN_PASSWORD, service))
